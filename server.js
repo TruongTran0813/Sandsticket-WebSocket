@@ -50,6 +50,14 @@ io.on("connection", (socket) => {
         });
       }
     });
+    socket.on("updateBetValue", (data) => {
+      console.log("🚀 ~ socket.on ~ data:", data);
+      Object.values(connections).forEach(({ socket, role }) => {
+        if (role === "CLIENT") {
+          socket.emit("updateBetValue", data);
+        }
+      });
+    });
 
     // socket.on("typing", (adminId) => {
     //   if (
