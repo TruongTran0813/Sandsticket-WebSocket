@@ -51,10 +51,18 @@ io.on("connection", (socket) => {
       }
     });
     socket.on("updateBetValue", (data) => {
-      console.log("🚀 ~ socket.on ~ data:", data);
+      console.log("🚀 ~ updateBetValue:", data);
       Object.values(connections).forEach(({ socket, role }) => {
         if (role === "CLIENT") {
           socket.emit("updateBetValue", data);
+        }
+      });
+    });
+    socket.on("userBetItem", (data) => {
+      console.log("🚀 ~ userBetItem:", data);
+      Object.values(connections).forEach(({ socket, role }) => {
+        if (role === "ADMIN") {
+          socket.emit("userBetItem", data);
         }
       });
     });
