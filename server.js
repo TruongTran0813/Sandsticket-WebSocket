@@ -1,13 +1,28 @@
+const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
+const { Server } = require("socket.io");
+const cors = require("cors");
 
-const server = http.createServer();
-const io = socketIo(server, {
+// Create an instance of Express
+const app = express();
+app.use(express.json()); // Middleware để parse JSON
+
+app.use(
+  cors({
+    origin: "*", // Cho phép tất cả các nguồn
+    methods: ["GET", "POST"], // Các phương thức bạn muốn cho phép
+  })
+);
+// Create an HTTP server and bind it to Express
+const server = http.createServer(app);
+
+// Create a new instance of Socket.IO and bind it to the server
+const io = new Server(server, {
   cors: {
+    origin: "*", // Cho phép tất cả các nguồn
     methods: ["GET", "POST"],
   },
 });
-
 const connections = {};
 
 io.on("connection", (socket) => {
@@ -25,6 +40,9 @@ io.on("connection", (socket) => {
       console.log(`User ${userId} with role ${role} disconnected.`);
       delete connections[userId];
       socket.broadcast.emit("offline", { userId });
+    });
+    socket.on("online", () => {
+      console.log("🚀 ~  online");
     });
 
     socket.on("message", ({ userId, toRole, message, message2 }) => {
@@ -81,6 +99,21 @@ io.on("connection", (socket) => {
   }
 });
 
-server.listen(8080, () => {
-  console.log("Socket.io server is listening on ws://localhost:8080");
+app.post("/updateBetValue", (req, res) => {
+  const data = req.body; // Lấy dữ liệu từ request body
+  console.log("Received updateBetValue request:", data);
+
+  // Emit sự kiện updateBetValue cho tất cả CLIENT
+  Object.values(connections).forEach(({ socket, role }) => {
+    if (role === "CLIENT") {
+      socket.emit("updateBetValue", data);
+    }
+  });
+
+  res.status(200).send("Bet value updated"); // Gửi phản hồi
+});
+
+const PORT = 8080;
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
