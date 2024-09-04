@@ -112,7 +112,12 @@ app.post("/updateBetValue", (req, res) => {
 
   res.status(200).send("Bet value updated"); // Gửi phản hồi
 });
-
+app.get("/", (req, res) => {
+  res.send("Websocket server is running");
+});
+app.get("/hello-world", (req, res) => {
+  res.send("Hello world");
+});
 const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
