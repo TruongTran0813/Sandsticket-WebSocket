@@ -2,6 +2,8 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const cron = require("node-cron");
+const axios = require("axios"); // Thêm axios
 
 // Create an instance of Express
 const app = express();
@@ -118,6 +120,45 @@ app.get("/", (req, res) => {
 app.get("/hello-world", (req, res) => {
   res.send("Hello world");
 });
+
+cron.schedule("* * * * *", async () => {
+  try {
+    console.log(`Calling API at: ${new Date().toISOString()}`);
+    const response = await axios.get(
+      "https://sandsticket.vercel.app/api/cron-job/minutely-update-bet-value"
+      //"http://localhost:3000/api/cron-job/minutely-update-bet-value"
+    );
+    const data = response.data; // Lấy dữ liệu từ response
+    console.log("API response:", data);
+    console.log(`API call completed at: ${new Date().toISOString()}`);
+  } catch (error) {
+    console.error(`Error calling API at ${new Date().toISOString()}:`, error);
+  }
+});
+
+cron.schedule("*/5 * * * *", async () => {
+  try {
+    console.log(`Calling API Create Lottery at: ${new Date().toISOString()}`);
+    const data = {
+      gameId: "1",
+    };
+    const response = await axios.post(
+      "https://sandsticket.vercel.app/api/game/lottery/create-lottery",
+      data
+    );
+    const res = response.data; // Lấy dữ liệu từ response
+    console.log("API response Create Lottery:", res);
+    console.log(
+      `API call Create Lottery completed at: ${new Date().toISOString()}`
+    );
+  } catch (error) {
+    console.error(
+      `Error calling Create Lottery API at ${new Date().toISOString()}:`,
+      error
+    );
+  }
+});
+
 const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
