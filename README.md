@@ -15,3 +15,9 @@ docker run -d -p 8080:8080 --name sandsticket-websocket truongtran0813/sandstick
 ## 3.Lệnh để push ứng dụng
 
 `docker push truongtran0813/sandsticket-websocket:latest`
+
+`sudo docker stop sandsticket-websocket`
+`sudo docker rm sandsticket-websocket`
+`sudo docker pull truongtran0813/sandsticket-websocket:latest`
+`sudo docker run -d -p 8080:8080 --name sandsticket-websocket truongtran0813/sandsticket-websocket:latest`
+`sudo docker logs -f sandsticket-websocket`
